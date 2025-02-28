@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package authSAS;
+
+option go_package = "begunov.sas.v1;sasv1";
+
+service Auth {
+    rpc Login(LoginRequest) returns (LoginResponce);
+    rpc Logout(LogoutRequest) returns (LogoutResponce);
+    rpc Register(RegisterRequest) returns (RegisterResponce);
+    rpc EmailVerifySendCode(EmailVerifySendCodeRequest) returns (EmailVerifySendCodeResponce);
+    rpc EmailVerify(EmailVerifyRequest) returns (EmailVerifyResponce);
+    rpc PasswordRecoverSendCode(PasswordRecoverSendCodeRequest) returns (PasswordRecoverSendCodeResponce);
+    rpc PasswordRecover(PasswordRecoverRequest) returns (PasswordRecoverResponce);
+}
+
+message LoginRequest {
+    string email = 1;
+    string password = 2;
+    int32 twoFA_code = 3;
+}
+
+message LoginResponce {
+    string token = 1;
+    string msg = 2;
+}
+
+message LogoutRequest {
+    string token = 1;
+}
+
+message LogoutResponce {
+    string msg = 1;
+}
+
+message RegisterRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message RegisterResponce {
+    int64 user_id = 1;
+}
+
+message EmailVerifySendCodeRequest {
+    string email = 1;
+}
+
+message EmailVerifySendCodeResponce {
+    string msg = 1;
+}
+
+message EmailVerifyRequest {
+    string email = 1;
+    int32 code = 2;
+}
+
+message EmailVerifyResponce {
+    string msg = 1;
+}
+
+message PasswordRecoverSendCodeRequest {
+    string email = 1;
+}
+
+message PasswordRecoverSendCodeResponce {
+    string msg = 1;
+}
+
+message PasswordRecoverRequest {
+    string email = 1;
+    string new_password = 2;
+    int32 code = 3; 
+}
+
+message PasswordRecoverResponce {
+    string msg = 1;
+}

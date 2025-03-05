@@ -7,6 +7,7 @@ option go_package = "begunov.sas.v1;sasv1";
 service Auth {
     rpc Login(LoginRequest) returns (LoginResponce);
     rpc Logout(LogoutRequest) returns (LogoutResponce);
+    rpc LoginWith2FACode(LoginWith2FACodeRequest) returns (LoginWith2FACodeResponce);
     rpc Register(RegisterRequest) returns (RegisterResponce);
     rpc EmailVerifySendCode(EmailVerifySendCodeRequest) returns (EmailVerifySendCodeResponce);
     rpc EmailVerify(EmailVerifyRequest) returns (EmailVerifyResponce);
@@ -17,7 +18,6 @@ service Auth {
 message LoginRequest {
     string email = 1;
     string password = 2;
-    int32 twoFA_code = 3;
 }
 
 message LoginResponce {
@@ -31,6 +31,15 @@ message LogoutRequest {
 
 message LogoutResponce {
     string msg = 1;
+}
+
+message LoginWith2FACodeRequest {
+    string email = 1;
+    int32 code = 2;
+}
+
+message LoginWith2FACodeResponce {
+    string token = 1;
 }
 
 message RegisterRequest {

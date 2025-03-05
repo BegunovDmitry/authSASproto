@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	Auth_Login_FullMethodName                   = "/authSAS.Auth/Login"
 	Auth_Logout_FullMethodName                  = "/authSAS.Auth/Logout"
+	Auth_LoginWith2FACode_FullMethodName        = "/authSAS.Auth/LoginWith2FACode"
 	Auth_Register_FullMethodName                = "/authSAS.Auth/Register"
 	Auth_EmailVerifySendCode_FullMethodName     = "/authSAS.Auth/EmailVerifySendCode"
 	Auth_EmailVerify_FullMethodName             = "/authSAS.Auth/EmailVerify"
@@ -34,6 +35,7 @@ const (
 type AuthClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponce, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponce, error)
+	LoginWith2FACode(ctx context.Context, in *LoginWith2FACodeRequest, opts ...grpc.CallOption) (*LoginWith2FACodeResponce, error)
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponce, error)
 	EmailVerifySendCode(ctx context.Context, in *EmailVerifySendCodeRequest, opts ...grpc.CallOption) (*EmailVerifySendCodeResponce, error)
 	EmailVerify(ctx context.Context, in *EmailVerifyRequest, opts ...grpc.CallOption) (*EmailVerifyResponce, error)
@@ -63,6 +65,16 @@ func (c *authClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LogoutResponce)
 	err := c.cc.Invoke(ctx, Auth_Logout_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authClient) LoginWith2FACode(ctx context.Context, in *LoginWith2FACodeRequest, opts ...grpc.CallOption) (*LoginWith2FACodeResponce, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LoginWith2FACodeResponce)
+	err := c.cc.Invoke(ctx, Auth_LoginWith2FACode_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -125,6 +137,7 @@ func (c *authClient) PasswordRecover(ctx context.Context, in *PasswordRecoverReq
 type AuthServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponce, error)
 	Logout(context.Context, *LogoutRequest) (*LogoutResponce, error)
+	LoginWith2FACode(context.Context, *LoginWith2FACodeRequest) (*LoginWith2FACodeResponce, error)
 	Register(context.Context, *RegisterRequest) (*RegisterResponce, error)
 	EmailVerifySendCode(context.Context, *EmailVerifySendCodeRequest) (*EmailVerifySendCodeResponce, error)
 	EmailVerify(context.Context, *EmailVerifyRequest) (*EmailVerifyResponce, error)
@@ -145,6 +158,9 @@ func (UnimplementedAuthServer) Login(context.Context, *LoginRequest) (*LoginResp
 }
 func (UnimplementedAuthServer) Logout(context.Context, *LogoutRequest) (*LogoutResponce, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
+}
+func (UnimplementedAuthServer) LoginWith2FACode(context.Context, *LoginWith2FACodeRequest) (*LoginWith2FACodeResponce, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoginWith2FACode not implemented")
 }
 func (UnimplementedAuthServer) Register(context.Context, *RegisterRequest) (*RegisterResponce, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
@@ -214,6 +230,24 @@ func _Auth_Logout_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServer).Logout(ctx, req.(*LogoutRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Auth_LoginWith2FACode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginWith2FACodeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).LoginWith2FACode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_LoginWith2FACode_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).LoginWith2FACode(ctx, req.(*LoginWith2FACodeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -322,6 +356,10 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Logout",
 			Handler:    _Auth_Logout_Handler,
+		},
+		{
+			MethodName: "LoginWith2FACode",
+			Handler:    _Auth_LoginWith2FACode_Handler,
 		},
 		{
 			MethodName: "Register",
